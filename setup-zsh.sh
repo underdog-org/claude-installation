@@ -1,10 +1,19 @@
 #!/bin/bash
 set -euo pipefail
 
+HERE="$(cd "$(dirname "$0")" && pwd)"
+
+# When run as dotfiles the container may have no zsh at all (devcontainer
+# features only apply to the repo that owns the devcontainer).
+if ! command -v zsh >/dev/null 2>&1; then
+  echo "installing zsh + jq"
+  sudo apt-get update -qq && sudo apt-get install -y -qq zsh jq
+fi
+command -v jq >/dev/null 2>&1 || sudo apt-get install -y -qq jq
+
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 P10K_DIR="$ZSH_CUSTOM/themes/powerlevel10k"
 
-# oh-my-zsh is installed by the devcontainer common-utils feature; guard anyway
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
   RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
@@ -21,10 +30,18 @@ else
 fi
 
 # ship the pre-generated prompt config so the wizard never runs
-cp "$(dirname "$0")/p10k.zsh" "$HOME/.p10k.zsh"
+cp "$HERE/p10k.zsh" "$HOME/.p10k.zsh"
 
 if ! grep -q 'p10k.zsh' "$HOME/.zshrc" 2>/dev/null; then
   echo '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh' >> "$HOME/.zshrc"
+fi
+
+# make zsh the login shell — devcontainer's configureZshAsDefaultShell is not
+# available when we run as dotfiles, so do it by hand
+ZSH_BIN="$(command -v zsh)"
+if [ "${SHELL:-}" != "$ZSH_BIN" ]; then
+  grep -qx "$ZSH_BIN" /etc/shells || echo "$ZSH_BIN" | sudo tee -a /etc/shells >/dev/null
+  sudo chsh -s "$ZSH_BIN" "$(whoami)" && echo "default shell -> $ZSH_BIN"
 fi
 
 echo "zsh + powerlevel10k ready."
