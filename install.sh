@@ -1,2 +1,2 @@
 #!/bin/bash
-npm install -g @anthropic-ai/claude-code
+curl -fsSL https://claude.ai/install.sh | bash
