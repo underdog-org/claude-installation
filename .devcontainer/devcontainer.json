@@ -10,7 +10,7 @@
     },
     "ghcr.io/devcontainers/features/node:1": {}
   },
-  "postCreateCommand": "bash ./setup-zsh.sh && bash ./install.sh",
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y jq && bash ./setup-zsh.sh && bash ./install.sh && bash ./setup-claude-config.sh",
   "remoteEnv": {
     "PATH": "${containerEnv:HOME}/.local/bin:${containerEnv:PATH}"
   },

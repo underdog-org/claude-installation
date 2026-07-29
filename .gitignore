@@ -1,0 +1,21 @@
+# NEVER commit Claude Code credentials
+.credentials.json
+dotclaude/.credentials.json
+.claude.json
+
+# machine-local Claude Code state — transcripts, caches, history
+dotclaude/projects/
+dotclaude/history.jsonl
+dotclaude/file-history/
+dotclaude/backups/
+dotclaude/cache/
+dotclaude/paste-cache/
+dotclaude/shell-snapshots/
+dotclaude/session-env/
+dotclaude/sessions/
+dotclaude/daemon/
+dotclaude/plugins/
+dotclaude/statusline-cache.json*
+dotclaude/settings.local.json
+
+.DS_Store
